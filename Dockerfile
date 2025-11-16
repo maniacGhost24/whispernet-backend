@@ -7,9 +7,6 @@ WORKDIR /app
 # Copy only pom.xml first to leverage Docker cache
 COPY pom.xml .
 
-# Download all dependencies (cached unless pom.xml changes)
-RUN mvn -q -e -B dependency:go-offline
-
 # Now copy the entire project
 COPY . .
 
