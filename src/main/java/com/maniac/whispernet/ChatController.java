@@ -38,8 +38,9 @@ public class ChatController {
         );
         msg.convertAndSend("/topic/public", joinMsg);
 
+//        Send current online users to newly joined user.
         Set<String> onlineUsers = users.getOnlineUsers();
-        msg.convertAndSendToUser(username, "/queue/users", onlineUsers);
+        msg.convertAndSend("/topic/private."+username+".users",onlineUsers.toArray(String[]::new));
     }
 
 //    DIRECT MESSAGE (END-TO-END ENCRYPTION)
@@ -47,21 +48,13 @@ public class ChatController {
     public void sendMessage(@Payload ChatMessage m){
 
 //      Server doesn't decrypt the message content that is sent from server is only cipher text from client
-        msg.convertAndSendToUser(
-                m.getReceiver(),
-                "/queue/messages",
-                m
-        );
+        msg.convertAndSend("/topic/private."+m.getReceiver(),m);
     }
 
 //    TYPING INDICATOR
     @MessageMapping("/typing")
     public void typing(@Payload TypingEvent e){
-        msg.convertAndSendToUser(
-                e.getToUser(),
-                "/queue/typing",
-                e
-        );
+        msg.convertAndSend("/topic/private."+e.getToUser()+".typing",e);
     }
 
 //    USER DISCONNECT
