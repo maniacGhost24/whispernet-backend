@@ -14,6 +14,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Set;
+
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
@@ -35,6 +37,9 @@ public class ChatController {
                 ChatMessage.Type.USER_JOIN, username, null, null
         );
         msg.convertAndSend("/topic/public", joinMsg);
+
+        Set<String> onlineUsers = users.getOnlineUsers();
+        msg.convertAndSendToUser(username, "/queue/users", onlineUsers);
     }
 
 //    DIRECT MESSAGE (END-TO-END ENCRYPTION)
